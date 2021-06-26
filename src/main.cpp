@@ -7,28 +7,31 @@
 #include <SD.h>
 #include "Adafruit_MPU6050.h"
 
-#define MAX_LENGTH 2000
+#define MAX_LENGTH 25000
+#define TYPICAL_MSG_LEN 40
 
 const int chipSelect = 53;
+char msg[MAX_LENGTH];
+int msgLen = 0;
 //Sd2Card card;
 //SdVolume volume;
 //SdFile root;
 String message = "";
 Adafruit_MPU6050 mpu;
 File dataFile;
-unsigned long MS;
+//unsigned long MS;
 unsigned long start;
 
-char emit[40];
 sensors_event_t a, g, temp;
 
 unsigned long before;
 unsigned long after;
 
 int count = 0;
+int bufferOverflowCheck = MAX_LENGTH-TYPICAL_MSG_LEN;
 
 void setup() {
-      Serial.begin(115200);
+      Serial.begin(9600);
       while(!Serial){
         delay(10);
       }
@@ -56,11 +59,10 @@ void setup() {
       SPI.begin();
       Wire.begin();
       Wire.setClock(3400000);
-      //digitalWrite(4,HIGH);
       
       dataFile = SD.open("datalog.txt", FILE_WRITE);
       
-      //Serial.println("Start recording");
+      Serial.println("Start recording");
       
 }
  
@@ -68,33 +70,16 @@ void setup() {
 void loop() {
       
       mpu.getAccel(&a);
-      //mpu.getEvent(&a, &g, &temp);
 
-      sprintf(emit , "%d,%lu,%lu,%lu\n", millis(), a.acceleration.x, a.acceleration.y, a.acceleration.z);
-      //sprintf(emit , "%d,%lu,%lu,%lu\n", millis(), a.acceleration.x, a.acceleration.y, a.acceleration.z ); //+ sizeof(emit), 
-      message.concat(emit);
-      //count++;
-
-      int msgLen = message.length();
-
-      Serial.println(msgLen);
-      
-      if(message.length() > MAX_LENGTH)
-      {
-        //Serial.println(message);
-        
-        //dataFile = SD.open("datalog.txt", FILE_WRITE);
+      if(msgLen < bufferOverflowCheck){
+        msgLen += sprintf(msg + msgLen , "%d,%lu,%lu,%lu\n", millis(), a.acceleration.x, a.acceleration.y, a.acceleration.z);
+      }else{
         before = millis();
-        dataFile.print(message);
+        dataFile.write(msg, msgLen);
         dataFile.flush();
         after = millis();
-        
-        //before = millis();
-        
-        
-        //after = millis();
-        //Serial.print("TIME of operation  : ");Serial.print(after - before);Serial.print("\tCount  : ");Serial.println(count);
-        message = "";
-        //count = 0;
+
+        Serial.print("TIME of operation  : ");Serial.print(after - before);Serial.print("\tCount  : ");Serial.println(count);
+        msgLen = 0;
      }
 }
