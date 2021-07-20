@@ -72,7 +72,10 @@ void loop() {
       mpu.getAccel(&a);
 
       if(msgLen < bufferOverflowCheck){
-        msgLen += sprintf(msg + msgLen , "%d,%lu,%lu,%lu\n", millis(), a.acceleration.x, a.acceleration.y, a.acceleration.z);
+        
+        msgLen += sprintf(msg + msgLen , "%lu,%lu,%lu,%lu\n", millis(), a.acceleration.x, a.acceleration.y, a.acceleration.z);
+        
+        
       }else{
         before = millis();
         dataFile.write(msg, msgLen);

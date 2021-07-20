@@ -463,83 +463,87 @@ void Adafruit_MPU6050::_readAcell(void)
   Adafruit_BusIO_Register data_reg =
       Adafruit_BusIO_Register(i2c_dev, MPU6050_ACCEL_OUT, 5);
 
-  uint8_t buffer[5];
+  uint8_t buffer[6];
   data_reg.read(buffer, 5);
 
   rawAccX = buffer[0] << 8 | buffer[1];
   rawAccY = buffer[2] << 8 | buffer[3];
   rawAccZ = buffer[4] << 8 | buffer[5];
 
-  mpu6050_accel_range_t accel_range = getAccelerometerRange();
+  // mpu6050_accel_range_t accel_range = getAccelerometerRange();
 
-  float accel_scale = 1;
-  if (accel_range == MPU6050_RANGE_16_G)
-    accel_scale = 2048;
-  if (accel_range == MPU6050_RANGE_8_G)
-    accel_scale = 4096;
-  if (accel_range == MPU6050_RANGE_4_G)
-    accel_scale = 8192;
-  if (accel_range == MPU6050_RANGE_2_G)
-    accel_scale = 16384;
+  //  float accel_scale = 1;
+  // if (accel_range == MPU6050_RANGE_16_G)
+  //   accel_scale = 2048;
+  // if (accel_range == MPU6050_RANGE_8_G)
+  //   accel_scale = 4096;
+  // if (accel_range == MPU6050_RANGE_4_G)
+  //   accel_scale = 8192;
+  // if (accel_range == MPU6050_RANGE_2_G)
+  //   accel_scale = 16384;
 
   // setup range dependant scaling
-  accX = ((float)rawAccX) / accel_scale;
-  accY = ((float)rawAccY) / accel_scale;
-  accZ = ((float)rawAccZ) / accel_scale;
+  // accX = ((float)rawAccX) / accel_scale;
+  // accY = ((float)rawAccY) / accel_scale;
+  // accZ = ((float)rawAccZ) / accel_scale;
+
+  accX = rawAccX;
+  accY = rawAccY;
+  accZ = rawAccZ;
 
 }
 
-void Adafruit_MPU6050::_read(void) {
-  // get raw readings
-  Adafruit_BusIO_Register data_reg =
-      Adafruit_BusIO_Register(i2c_dev, MPU6050_ACCEL_OUT, 14);
+// void Adafruit_MPU6050::_read(void) {
+//   // get raw readings
+//   Adafruit_BusIO_Register data_reg =
+//       Adafruit_BusIO_Register(i2c_dev, MPU6050_ACCEL_OUT, 14);
 
-  uint8_t buffer[14];
-  data_reg.read(buffer, 14);
+//   uint8_t buffer[14];
+//   data_reg.read(buffer, 14);
 
   
 
-  rawTemp = buffer[6] << 8 | buffer[7];
+//   rawTemp = buffer[6] << 8 | buffer[7];
 
-  rawGyroX = buffer[8] << 8 | buffer[9];
-  rawGyroY = buffer[10] << 8 | buffer[11];
-  rawGyroZ = buffer[12] << 8 | buffer[13];
+//   rawGyroX = buffer[8] << 8 | buffer[9];
+//   rawGyroY = buffer[10] << 8 | buffer[11];
+//   rawGyroZ = buffer[12] << 8 | buffer[13];
 
-  temperature = (rawTemp / 340.0) + 36.53;
+//   temperature = (rawTemp / 340.0) + 36.53;
 
-  mpu6050_accel_range_t accel_range = getAccelerometerRange();
+//   mpu6050_accel_range_t accel_range = getAccelerometerRange();
 
-  float accel_scale = 1;
-  if (accel_range == MPU6050_RANGE_16_G)
-    accel_scale = 2048;
-  if (accel_range == MPU6050_RANGE_8_G)
-    accel_scale = 4096;
-  if (accel_range == MPU6050_RANGE_4_G)
-    accel_scale = 8192;
-  if (accel_range == MPU6050_RANGE_2_G)
-    accel_scale = 16384;
+//   float accel_scale = 1;
+//   if (accel_range == MPU6050_RANGE_16_G)
+//     accel_scale = 2048;
+//   if (accel_range == MPU6050_RANGE_8_G)
+//     accel_scale = 4096;
+//   if (accel_range == MPU6050_RANGE_4_G)
+//     accel_scale = 8192;
+//   if (accel_range == MPU6050_RANGE_2_G)
+//     accel_scale = 16384;
 
-  // setup range dependant scaling
-  accX = ((float)rawAccX) / accel_scale;
-  accY = ((float)rawAccY) / accel_scale;
-  accZ = ((float)rawAccZ) / accel_scale;
+//   // setup range dependant scaling
+//   accX = ((float)rawAccX) / accel_scale;
+//   accY = ((float)rawAccY) / accel_scale;
+//   accZ = ((float)rawAccZ) / accel_scale;
 
-  mpu6050_gyro_range_t gyro_range = getGyroRange();
+//   mpu6050_gyro_range_t gyro_range = getGyroRange();
 
-  float gyro_scale = 1;
-  if (gyro_range == MPU6050_RANGE_250_DEG)
-    gyro_scale = 131;
-  if (gyro_range == MPU6050_RANGE_500_DEG)
-    gyro_scale = 65.5;
-  if (gyro_range == MPU6050_RANGE_1000_DEG)
-    gyro_scale = 32.8;
-  if (gyro_range == MPU6050_RANGE_2000_DEG)
-    gyro_scale = 16.4;
+//   float gyro_scale = 1;
+//   if (gyro_range == MPU6050_RANGE_250_DEG)
+//     gyro_scale = 131;
+//   if (gyro_range == MPU6050_RANGE_500_DEG)
+//     gyro_scale = 65.5;
+//   if (gyro_range == MPU6050_RANGE_1000_DEG)
+//     gyro_scale = 32.8;
+//   if (gyro_range == MPU6050_RANGE_2000_DEG)
+//     gyro_scale = 16.4;
 
-  gyroX = ((float)rawGyroX) / gyro_scale;
-  gyroY = ((float)rawGyroY) / gyro_scale;
-  gyroZ = ((float)rawGyroZ) / gyro_scale;
-}
+//   gyroX = ((float)rawGyroX) / gyro_scale;
+//   gyroY = ((float)rawGyroY) / gyro_scale;
+//   gyroZ = ((float)rawGyroZ) / gyro_scale;
+// }
 
 /**************************************************************************/
 /*!
