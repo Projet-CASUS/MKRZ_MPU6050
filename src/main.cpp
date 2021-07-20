@@ -73,7 +73,7 @@ void loop() {
 
       if(msgLen < bufferOverflowCheck){
         
-        msgLen += sprintf(msg + msgLen , "%lu,%lu,%lu,%lu\n", millis(), a.acceleration.x, a.acceleration.y, a.acceleration.z);
+        msgLen += sprintf(msg + msgLen , "%lu,%ul,%ul,%ul\n", millis(), a.acceleration.x, a.acceleration.y, a.acceleration.z);
         
         
       }else{

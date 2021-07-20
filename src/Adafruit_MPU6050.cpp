@@ -70,12 +70,12 @@ Adafruit_MPU6050::~Adafruit_MPU6050(void) {
 bool Adafruit_MPU6050::begin(uint8_t i2c_address, TwoWire *wire,
                              int32_t sensor_id) {
   Wire.begin();
-  Wire.setClock(400000);
+  Wire.setClock(3400000);
   if (i2c_dev) {
     delete i2c_dev; // remove old interface
   }
 
-  wire->setClock(400000);
+  wire->setClock(3400000);
   i2c_dev = new Adafruit_I2CDevice(i2c_address, wire);
 
   if (!i2c_dev->begin()) {
@@ -458,7 +458,7 @@ void Adafruit_MPU6050::setCycleRate(mpu6050_cycle_rate_t rate) {
  *     @brief  Updates the measurement data for all sensors simultaneously
  */
 /**************************************************************************/
-void Adafruit_MPU6050::_readAcell(void)
+void Adafruit_MPU6050::_readAccell(void)
 {
   Adafruit_BusIO_Register data_reg =
       Adafruit_BusIO_Register(i2c_dev, MPU6050_ACCEL_OUT, 5);
@@ -490,6 +490,24 @@ void Adafruit_MPU6050::_readAcell(void)
   accX = rawAccX;
   accY = rawAccY;
   accZ = rawAccZ;
+
+}
+
+void Adafruit_MPU6050::_readGyro(void)
+{
+  Adafruit_BusIO_Register data_reg =
+      Adafruit_BusIO_Register(i2c_dev, MPU6050_GYRO_OUT, 5);
+
+  uint8_t buffer[6];
+  data_reg.read(buffer, 5);
+
+  rawGyroX = buffer[8] << 8 | buffer[9];
+  rawGyroY = buffer[10] << 8 | buffer[11];
+  rawGyroZ = buffer[12] << 8 | buffer[13];
+
+  gyroX = rawGyroX;
+  gyroY = rawGyroY;
+  gyroZ = rawGyroZ;
 
 }
 
@@ -560,35 +578,32 @@ void Adafruit_MPU6050::_readAcell(void)
     @return True on successful read
 */
 /**************************************************************************/
-bool Adafruit_MPU6050::getEvent(sensors_event_t *accel, sensors_event_t *gyro,
-                                sensors_event_t *temp) {
-  uint32_t timestamp = millis();
-  _read();
+// bool Adafruit_MPU6050::getEvent(sensors_event_t *accel, sensors_event_t *gyro,
+//                                 sensors_event_t *temp) {
+//   uint32_t timestamp = millis();
+//   _read();
 
-  fillTempEvent(temp, timestamp);
-  fillAccelEvent(accel, timestamp);
-  fillGyroEvent(gyro, timestamp);
+//   fillTempEvent(temp, timestamp);
+//   fillAccelEvent(accel, timestamp);
+//   fillGyroEvent(gyro, timestamp);
 
-  return true;
-}
+//   return true;
+// }
 
 bool Adafruit_MPU6050::getAccel(sensors_event_t *accel)
 {
   uint32_t timestamp = millis();
-  _readAcell();
+  _readAccell();
   fillAccelEvent(accel, timestamp);
   return true;
 }
 
-void Adafruit_MPU6050::fillTempEvent(sensors_event_t *temp,
-                                     uint32_t timestamp) {
-
-  memset(temp, 0, sizeof(sensors_event_t));
-  temp->version = sizeof(sensors_event_t);
-  temp->sensor_id = _sensorid_temp;
-  temp->type = SENSOR_TYPE_AMBIENT_TEMPERATURE;
-  temp->timestamp = timestamp;
-  temp->temperature = temperature;
+bool Adafruit_MPU6050::getGyro(sensors_event_t *gyro)
+{
+  uint32_t timestamp = millis();
+  _readGyro();
+  fillGyroEvent(gyro, timestamp);
+  return true;
 }
 
 void Adafruit_MPU6050::fillAccelEvent(sensors_event_t *accel,
@@ -666,12 +681,12 @@ void Adafruit_MPU6050_Gyro::getSensor(sensor_t *sensor) {
     @returns True
 */
 /**************************************************************************/
-bool Adafruit_MPU6050_Gyro::getEvent(sensors_event_t *event) {
-  _theMPU6050->_read();
-  _theMPU6050->fillGyroEvent(event, millis());
+// bool Adafruit_MPU6050_Gyro::getEvent(sensors_event_t *event) {
+//   _theMPU6050->_read();
+//   _theMPU6050->fillGyroEvent(event, millis());
 
-  return true;
-}
+//   return true;
+// }
 
 /**************************************************************************/
 /*!
@@ -701,12 +716,12 @@ void Adafruit_MPU6050_Accelerometer::getSensor(sensor_t *sensor) {
     @returns True
 */
 /**************************************************************************/
-bool Adafruit_MPU6050_Accelerometer::getEvent(sensors_event_t *event) {
-  _theMPU6050->_read();
-  _theMPU6050->fillAccelEvent(event, millis());
+// bool Adafruit_MPU6050_Accelerometer::getEvent(sensors_event_t *event) {
+//   _theMPU6050->_read();
+//   _theMPU6050->fillAccelEvent(event, millis());
 
-  return true;
-}
+//   return true;
+// }
 
 /**************************************************************************/
 /*!
@@ -736,9 +751,9 @@ void Adafruit_MPU6050_Temp::getSensor(sensor_t *sensor) {
     @returns True
 */
 /**************************************************************************/
-bool Adafruit_MPU6050_Temp::getEvent(sensors_event_t *event) {
-  _theMPU6050->_read();
-  _theMPU6050->fillTempEvent(event, millis());
+// bool Adafruit_MPU6050_Temp::getEvent(sensors_event_t *event) {
+//   _theMPU6050->_read();
+//   _theMPU6050->fillTempEvent(event, millis());
 
-  return true;
-}
+//   return true;
+// }

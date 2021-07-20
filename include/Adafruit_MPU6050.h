@@ -49,6 +49,7 @@
 #define MPU6050_TEMP_H 0x41     ///< Temperature data high byte register
 #define MPU6050_TEMP_L 0x42     ///< Temperature data low byte register
 #define MPU6050_ACCEL_OUT 0x3B  ///< base address for sensor data reads
+#define MPU6050_GYRO_OUT 0x43  ///< base address for sensor data reads
 
 /**
  * @brief FSYNC output values
@@ -195,7 +196,9 @@ public:
   bool getEvent(sensors_event_t *accel, sensors_event_t *gyro,
                 sensors_event_t *temp);
 
-  bool getAccel(sensors_event_t *accel);	  
+  bool getAccel(sensors_event_t *accel);
+
+  bool getGyro(sensors_event_t *accel);	
 
   mpu6050_accel_range_t getAccelerometerRange(void);
   void setAccelerometerRange(mpu6050_accel_range_t);
@@ -255,7 +258,9 @@ protected:
 
   void _read(void);
 
-  void _readAcell(void);
+  void _readAccell(void);
+
+  void _readGyro(void);
 	
   virtual bool _init(int32_t sensor_id);
 
