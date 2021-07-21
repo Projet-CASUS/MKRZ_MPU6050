@@ -508,7 +508,6 @@ void Adafruit_MPU6050::_readGyro(void)
   gyroX = rawGyroX;
   gyroY = rawGyroY;
   gyroZ = rawGyroZ;
-
 }
 
 // void Adafruit_MPU6050::_read(void) {
