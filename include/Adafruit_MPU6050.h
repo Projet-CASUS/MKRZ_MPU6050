@@ -48,8 +48,8 @@
 #define MPU6050_PWR_MGMT_2 0x6C ///< Secondary power/sleep control register
 #define MPU6050_TEMP_H 0x41     ///< Temperature data high byte register
 #define MPU6050_TEMP_L 0x42     ///< Temperature data low byte register
-#define MPU6050_ACCEL_OUT 0x3B  ///< base address for sensor data reads
-#define MPU6050_GYRO_OUT 0x43  ///< base address for sensor data reads
+#define MPU6050_ACCEL_OUT 0x3B  ///< base address for accell data reads
+#define MPU6050_GYRO_OUT 0x43  ///< base address for gyro data reads
 
 /**
  * @brief FSYNC output values
@@ -133,21 +133,29 @@ typedef enum {
   MPU6050_CYCLE_40_HZ,   ///< 40 Hz
 } mpu6050_cycle_rate_t;
 
+typedef struct {
+  int32_t timestamp;
+  int16_t x;
+  int16_t y;
+  int16_t z;
+} raw_event;
+
+
 class Adafruit_MPU6050;
 
 /** Adafruit Unified Sensor interface for temperature component of MPU6050 */
-class Adafruit_MPU6050_Temp : public Adafruit_Sensor {
-public:
-  /** @brief Create an Adafruit_Sensor compatible object for the temp sensor
-      @param parent A pointer to the MPU6050 class */
-  Adafruit_MPU6050_Temp(Adafruit_MPU6050 *parent) { _theMPU6050 = parent; }
-  bool getEvent(sensors_event_t *);
-  void getSensor(sensor_t *);
+// class Adafruit_MPU6050_Temp : public Adafruit_Sensor {
+// public:
+//   /** @brief Create an Adafruit_Sensor compatible object for the temp sensor
+//       @param parent A pointer to the MPU6050 class */
+//   Adafruit_MPU6050_Temp(Adafruit_MPU6050 *parent) { _theMPU6050 = parent; }
+//   bool getEvent(sensors_event_t *);
+//   void getSensor(sensor_t *);
 
-private:
-  int _sensorID = 0x650;
-  Adafruit_MPU6050 *_theMPU6050 = NULL;
-};
+// private:
+//   int _sensorID = 0x650;
+//   Adafruit_MPU6050 *_theMPU6050 = NULL;
+// };
 
 /** Adafruit Unified Sensor interface for accelerometer component of MPU6050 */
 class Adafruit_MPU6050_Accelerometer : public Adafruit_Sensor {
@@ -193,12 +201,12 @@ public:
              int32_t sensorID = 0);
 
   // Adafruit_Sensor API/Interface
-  bool getEvent(sensors_event_t *accel, sensors_event_t *gyro,
-                sensors_event_t *temp);
+  // bool getEvent(sensors_event_t *accel, sensors_event_t *gyro,
+  //               sensors_event_t *temp);
 
-  bool getAccel(sensors_event_t *accel);
+  bool getAccel(raw_event *accel);
 
-  bool getGyro(sensors_event_t *accel);	
+  bool getGyro(raw_event *gyro);
 
   mpu6050_accel_range_t getAccelerometerRange(void);
   void setAccelerometerRange(mpu6050_accel_range_t);
@@ -228,7 +236,7 @@ public:
   mpu6050_cycle_rate_t getCycleRate(void);
   void reset(void);
 
-  Adafruit_Sensor *getTemperatureSensor(void);
+  //Adafruit_Sensor *getTemperatureSensor(void);
   Adafruit_Sensor *getAccelerometerSensor(void);
   Adafruit_Sensor *getGyroSensor(void);
 
@@ -237,7 +245,7 @@ private:
   void _scaleSensorData(void);
 
 protected:
-  float temperature, ///< Last reading's temperature (C)
+  float //temperature, ///< Last reading's temperature (C)
       accX,          ///< Last reading's accelerometer X axis m/s^2
       accY,          ///< Last reading's accelerometer Y axis m/s^2
       accZ,          ///< Last reading's accelerometer Z axis m/s^2
@@ -247,16 +255,16 @@ protected:
 
   Adafruit_I2CDevice *i2c_dev = NULL; ///< Pointer to I2C bus interface
 
-  Adafruit_MPU6050_Temp *temp_sensor = NULL; ///< Temp sensor data object
+  //Adafruit_MPU6050_Temp *temp_sensor = NULL; ///< Temp sensor data object
   Adafruit_MPU6050_Accelerometer *accel_sensor =
       NULL;                                  ///< Accelerometer data object
   Adafruit_MPU6050_Gyro *gyro_sensor = NULL; ///< Gyro data object
 
   uint16_t _sensorid_accel, ///< ID number for accelerometer
-      _sensorid_gyro,       ///< ID number for gyro
-      _sensorid_temp;       ///< ID number for temperature
+      _sensorid_gyro;       ///< ID number for gyro
+      //_sensorid_temp;       ///< ID number for temperature
 
-  void _read(void);
+  //void _read(void);
 
   void _readAccell(void);
 
@@ -275,9 +283,9 @@ private:
 
   int16_t rawAccX, rawAccY, rawAccZ, rawTemp, rawGyroX, rawGyroY, rawGyroZ;
 
-  void fillTempEvent(sensors_event_t *temp, uint32_t timestamp);
-  void fillAccelEvent(sensors_event_t *accel, uint32_t timestamp);
-  void fillGyroEvent(sensors_event_t *gyro, uint32_t timestamp);
+  //void fillTempEvent(sensors_event_t *temp, uint32_t timestamp);
+  void fillAccelEvent(raw_event *accel, uint32_t timestamp);
+  void fillGyroEvent(raw_event *gyro, uint32_t timestamp);
 };
 
 #endif

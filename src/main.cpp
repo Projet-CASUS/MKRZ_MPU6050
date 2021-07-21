@@ -22,7 +22,7 @@ File dataFile;
 //unsigned long MS;
 unsigned long start;
 
-sensors_event_t a, g, temp;
+raw_event event;
 
 unsigned long before;
 unsigned long after;
@@ -69,11 +69,11 @@ void setup() {
 
 void loop() {
       
-      mpu.getAccel(&a);
+      mpu.getAccel(&event);
 
       if(msgLen < bufferOverflowCheck){
         
-        msgLen += sprintf(msg + msgLen , "%lu,%ul,%ul,%ul\n", millis(), a.acceleration.x, a.acceleration.y, a.acceleration.z);
+        msgLen += sprintf(msg + msgLen , "%lu,%d,%d,%d\n", event.timestamp, event.x, event.y, event.z);
         
         
       }else{
