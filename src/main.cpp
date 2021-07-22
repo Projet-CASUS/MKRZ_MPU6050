@@ -32,9 +32,9 @@ int bufferOverflowCheck = MAX_LENGTH-TYPICAL_MSG_LEN;
 
 void setup() {
       Serial.begin(9600);
-      while(!Serial){
-        delay(10);
-      }
+      // while(!Serial){
+      //   delay(10);
+      // }
       if (!mpu.begin()) {
         while (1) {
           delay(10);
